@@ -1,11 +1,17 @@
 <p align="center">
-  <img src="https://i.imgur.com/EmperhW.png" alt="Colmoji Wordmark Logo" width="450">
+  <img src="https://i.imgur.com/vH1MDUw.png" alt="Colmoji Main Logo" width="200">
+</p>
+
+<p align="center">
+  <img src="https://i.imgur.com/gYG3v1e.png" alt="Colmoji Wordmark Logo" width="450">
 </p>
 
 <p align="center">
   A simple, beautiful, and powerful emoji autocomplete menu that works on any website.
   <br><br>
-  <a href="https://github.com/loriwasstolen/Colmoji/raw/main/colmoji.user.js"><strong>Install Now</strong></a>
+  <a href="https://raw.githubusercontent.com/loriwasstolen/colmoji/main/colmoji.user.js"><strong>Install Now</strong></a>
+  <br>
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
 </p>
 
 ---
@@ -31,7 +37,7 @@ Getting started is simple. You'll be running in under a minute.
 2.  **Install Colmoji**
     With your userscript manager installed, just click the link below:
 
-    ### ➡️ [**Click Here to Install Colmoji**](https://github.com/loriwasstolen/Colmoji/raw/main/colmoji.user.js)
+    ### ➡️ [**Click Here to Install Colmoji**](https://raw.githubusercontent.com/loriwasstolen/colmoji/main/colmoji.user.js)
 
     A new tab will open in your userscript manager. Just click the **"Install"** button, and you're all set! The script will even update itself automatically.
 
