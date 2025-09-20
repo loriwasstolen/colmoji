@@ -10,10 +10,6 @@
   <a href="https://github.com/loriwasstolen/colmoji/issues">Report an Issue</a>
 </p>
 
-<p align="center">
-  <img src="https://i.imgur.com/lCQGkwW.png" alt="Colmoji Wordmark" width="400">
-</p>
-
 ## ✨ How It Works
 
 Colmoji is a lightweight userscript that seamlessly enhances your typing experience across the web.
