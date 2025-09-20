@@ -5,7 +5,7 @@
 <p align="center">
   A simple, beautiful, and powerful emoji autocomplete menu that works on any website.
   <br><br>
-  <a href="https://github.com/YOUR_USERNAME/Colmoji/raw/main/colmoji.user.js"><strong>Install Now</strong></a>
+  <a href="https://github.com/loriwasstolen/Colmoji/raw/main/colmoji.user.js"><strong>Install Now</strong></a>
 </p>
 
 ---
@@ -31,7 +31,7 @@ Getting started is simple. You'll be running in under a minute.
 2.  **Install Colmoji**
     With your userscript manager installed, just click the link below:
 
-    ### ➡️ [**Click Here to Install Colmoji**](https://github.com/YOUR_USERNAME/Colmoji/raw/main/colmoji.user.js)
+    ### ➡️ [**Click Here to Install Colmoji**](https://github.com/loriwasstolen/Colmoji/raw/main/colmoji.user.js)
 
     A new tab will open in your userscript manager. Just click the **"Install"** button, and you're all set! The script will even update itself automatically.
 
