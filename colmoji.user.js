@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Colmoji
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Find and insert emojis with a clean, Discord-like autocomplete menu.
+// @version      1.1
+// @description  Find and insert emojis with a clean, Discord-like autocomplete menu that works everywhere.
 // @author       lori (loriwasstolen)
 // @match        *://*/*
 // @grant        GM_xmlhttpRequest
@@ -226,17 +226,52 @@ SOFTWARE.
         ui.suggester.style.left = `${rect.left + window.scrollX}px`;
     }
 
+    /**
+     * Inserts the selected emoji into the text field, supporting both standard inputs and contenteditable divs.
+     */
     function insertEmoji(target, textToReplace, emoji, shortcode) {
         addEmojiToRecents(shortcode);
+        if (target.isContentEditable) {
+            insertIntoContentEditable(textToReplace, emoji);
+        } else {
+            insertIntoInput(target, textToReplace, emoji);
+        }
+        // Dispatching an input event is crucial for frameworks like React to notice the change.
+        target.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+        hideSuggester();
+    }
+
+    function insertIntoInput(target, textToReplace, emoji) {
         const { value, selectionStart } = target;
         const textBefore = value.substring(0, selectionStart - textToReplace.length);
         const textAfter = value.substring(selectionStart);
         target.value = `${textBefore}${emoji} ${textAfter}`;
         const newPos = textBefore.length + emoji.length + 1;
         target.setSelectionRange(newPos, newPos);
-        target.dispatchEvent(new Event('input', { bubbles: true }));
-        target.dispatchEvent(new Event('change', { bubbles: true }));
-        hideSuggester();
+    }
+
+    function insertIntoContentEditable(textToReplace, emoji) {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        const textNode = range.endContainer;
+
+        // Ensure we're working with a text node
+        if (textNode.nodeType === Node.TEXT_NODE) {
+            range.setStart(textNode, range.endOffset - textToReplace.length);
+            range.deleteContents();
+
+            // Use a non-breaking space to prevent cursor issues in some editors
+            const emojiNode = document.createTextNode(emoji + '\u00A0');
+            range.insertNode(emojiNode);
+
+            // Move the cursor to after the inserted emoji and space
+            range.setStartAfter(emojiNode);
+            range.setEndAfter(emojiNode);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
     }
 
     // --- SECTION: EVENT HANDLERS & UTILITIES ---
@@ -244,12 +279,31 @@ SOFTWARE.
     function handleInput(event) {
         if (!state.emojiMap) return;
         const { target } = event;
-        if (!target || !['input', 'textarea'].includes(target.tagName.toLowerCase())) return;
+        // Updated check to include contenteditable elements
+        if (!target || (!['input', 'textarea'].includes(target.tagName.toLowerCase()) && !target.isContentEditable)) return;
 
-        const textBeforeCursor = target.value.substring(0, target.selectionStart);
+        const { textBeforeCursor } = getTextBeforeCursor(target);
+        if (textBeforeCursor === null) { hideSuggester(); return; }
+
         const match = textBeforeCursor.match(/:([a-zA-Z0-9_+-]*)$/);
         if (match) { showSuggester(match[1], target); }
         else { hideSuggester(); }
+    }
+    
+    /**
+     * Gets the text content before the cursor, supporting both inputs and contenteditable divs.
+     */
+    function getTextBeforeCursor(element) {
+        if (element.isContentEditable) {
+            const selection = window.getSelection();
+            if (selection.rangeCount === 0) return { textBeforeCursor: null };
+            const range = selection.getRangeAt(0).cloneRange();
+            range.selectNodeContents(element);
+            range.setEnd(selection.focusNode, selection.focusOffset);
+            return { textBeforeCursor: range.toString() };
+        } else {
+            return { textBeforeCursor: element.value.substring(0, element.selectionStart) };
+        }
     }
 
     function handleKeyDown(event) {
@@ -264,7 +318,8 @@ SOFTWARE.
                 const selectedItem = items[state.selectedIndex];
                 const emoji = selectedItem.querySelector('.char').textContent;
                 const shortcode = selectedItem.querySelector('.shortcode').textContent.slice(1, -1);
-                const match = state.activeInput.value.substring(0, state.activeInput.selectionStart).match(/:([a-zA-Z0-9_+-]*)$/);
+                const { textBeforeCursor } = getTextBeforeCursor(state.activeInput);
+                const match = textBeforeCursor.match(/:([a-zA-Z0-9_+-]*)$/);
                 if (match) insertEmoji(state.activeInput, match[0], emoji, shortcode);
             },
             'Tab': () => keyActions['Enter'](),
@@ -302,7 +357,9 @@ SOFTWARE.
     }
 
     function attachEventListeners() {
+        // Use 'input' for real-time typing, and 'keyup' as a fallback for some contenteditable behaviors
         document.addEventListener('input', handleInput, true);
+        document.addEventListener('keyup', handleInput, true); 
         document.addEventListener('keydown', handleKeyDown, true);
         document.addEventListener('click', (e) => {
             if (state.activeInput && e.target !== state.activeInput && !ui.suggester.contains(e.target)) {
