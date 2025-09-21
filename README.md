@@ -10,6 +10,12 @@
   <a href="https://github.com/loriwasstolen/colmoji/issues">Report an Issue</a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/loriwasstolen/colmoji/releases/latest">
+    <img src="https://img.shields.io/github/v/release/loriwasstolen/colmoji" alt="Latest Release">
+  </a>
+</p>
+
 ## ✨ How It Works
 
 Colmoji is a lightweight userscript that seamlessly enhances your typing experience across the web.
